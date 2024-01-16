@@ -1,0 +1,42 @@
+ROSTemplateFormatVersion: '2015-09-01'
+Transform: 'Aliyun::Serverless-2018-04-03'
+Resources:
+  favorites-collector:
+    Type: 'Aliyun::Serverless::Service'
+    Properties:
+      Description: This is favorites-collector service
+      Role: 'acs:ram::1928784964217127:role/AliyunFcDefaultRole'
+      LogConfig:
+        Project: aliyun-fc-cn-beijing-228f2372-230b-5ea3-96dc-96ea1c0a3773
+        Logstore: function-log
+      VpcConfig:
+        VpcId: vpc-2zeal2zhsc0o81ta6fzdi
+        VSwitchIds:
+          - vsw-2ze78xbhs4nk4tz875b1p
+        SecurityGroupId: sg-2zeaxofn6yvdpw2tc7oi
+      InternetAccess: true
+    content2cubox:
+      Type: 'Aliyun::Serverless::Function'
+      Properties:
+        Handler: index.handler
+        Runtime: python3
+        Timeout: 60
+        MemorySize: 512
+        InstanceConcurrency: 1
+        EnvironmentVariables:
+          LD_LIBRARY_PATH: >-
+            /code/.fun/root/usr/local/lib:/code/.fun/root/usr/lib:/code/.fun/root/usr/lib/x86_64-linux-gnu:/code/.fun/root/usr/lib64:/code/.fun/root/lib:/code/.fun/root/lib/x86_64-linux-gnu:/code/.fun/root/python/lib/python2.7/site-packages:/code/.fun/root/python/lib/python3.6/site-packages:/code:/code/lib:/usr/local/lib
+          NODE_PATH: '/code/node_modules:/usr/local/lib/node_modules'
+          PATH: >-
+            /code/.fun/root/usr/local/bin:/code/.fun/root/usr/local/sbin:/code/.fun/root/usr/bin:/code/.fun/root/usr/sbin:/code/.fun/root/sbin:/code/.fun/root/bin:/code:/code/node_modules/.bin:/code/.fun/python/bin:/code/.fun/node_modules/.bin:/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/sbin:/bin
+          PYTHONUSERBASE: /code/.fun/python
+        CodeUri: ./favorites-collector/content2cubox
+      Events:
+        httpTrigger:
+          Type: HTTP
+          Properties:
+            Qualifier: LATEST
+            AuthType: anonymous
+            Methods:
+              - GET
+              - POST
